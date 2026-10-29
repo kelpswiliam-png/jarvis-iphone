@@ -1,0 +1,54 @@
+
+import express from "express";
+import cors from "cors";
+import OpenAI from "openai";
+
+const app = express();
+
+app.use(cors());
+app.use(express.json({ limit: "1mb" }));
+
+app.get("/", (req, res) => {
+  res.send("JARVIS backend está online.");
+});
+
+app.post("/chat", async (req, res) => {
+  try {
+    const apiKey = process.env.OPENAI_API_KEY;
+
+    if (!apiKey) {
+      return res.status(500).json({
+        error: "A chave da IA ainda não foi configurada no servidor."
+      });
+    }
+
+    const client = new OpenAI({ apiKey });
+    const message = req.body?.message;
+
+    if (typeof message !== "string" || !message.trim()) {
+      return res.status(400).json({
+        error: "Envie uma mensagem válida."
+      });
+    }
+
+    const response = await client.responses.create({
+      model: "gpt-4.1-mini",
+      instructions:
+        "Você é JARVIS, um assistente virtual educado, prestativo e objetivo. Responda em português brasileiro.",
+      input: message.trim()
+    });
+
+    res.json({ reply: response.output_text });
+  } catch (error) {
+    console.error("Erro no JARVIS:", error.message);
+    res.status(500).json({
+      error: "Não consegui responder agora. Verifique a configuração da IA."
+    });
+  }
+});
+
+const port = process.env.PORT || 3000;
+
+app.listen(port, "0.0.0.0", () => {
+  console.log(`JARVIS online na porta ${port}`);
+});

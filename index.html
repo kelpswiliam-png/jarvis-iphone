@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050914">
+<meta name="description" content="Assistente pessoal futurista inspirado em interfaces de ficção científica.">
+<link rel="manifest" href="manifest.webmanifest">
+<title>J.A.R.V.I.S. — Assistente Pessoal</title>
+<style>
+:root{color-scheme:dark;--bg:#050914;--panel:#091729;--cyan:#55eaff;--blue:#258eff;--muted:#8da9c5;--line:rgba(85,234,255,.2)}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 18%,#102d4b 0,#07111f 40%,var(--bg) 75%);color:#eaf7ff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+.app{max-width:760px;margin:auto;padding:18px 15px calc(24px + env(safe-area-inset-bottom));min-height:100vh;display:flex;flex-direction:column;gap:15px}
+header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:8px 2px 15px}.brand{letter-spacing:.2em;font-weight:750;font-size:14px}.sub{font-size:9px;color:var(--muted);letter-spacing:.16em;margin-top:5px}.status{font-size:10px;color:var(--cyan);border:1px solid var(--line);border-radius:20px;padding:8px 10px}
+.hero{display:flex;flex-direction:column;align-items:center;padding:5px 0}.clock{font-size:clamp(38px,10vw,58px);font-weight:200;letter-spacing:.08em;font-variant-numeric:tabular-nums}.date{color:var(--muted);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-top:4px}
+.core-wrap{width:min(61vw,235px);aspect-ratio:1;display:grid;place-items:center;position:relative;margin:18px auto 12px}.ring{position:absolute;border:1px solid rgba(85,234,255,.34);border-radius:50%;inset:0;animation:spin 22s linear infinite}.ring:before,.ring:after{content:"";position:absolute;border:1px dashed rgba(37,142,255,.65);border-radius:50%;inset:12px}.ring:after{inset:29px;border-style:solid;animation:spin 13s linear infinite reverse}.core{width:44%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 40% 35%,#f1ffff 0,#7cf3ff 7%,#1999f5 28%,#073b73 60%,#061426 75%);box-shadow:0 0 22px #1ea9ff,0 0 60px rgba(35,141,255,.5),inset 0 0 18px #a9f8ff;position:relative}.core:after{content:"";position:absolute;inset:-16px;border-radius:50%;border:1px solid rgba(85,234,255,.45);box-shadow:0 0 24px rgba(85,234,255,.16)}.core.listening{animation:pulse 1s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{50%{transform:scale(1.08);filter:brightness(1.5)}}
+.hint{color:var(--muted);font-size:12px;text-align:center;min-height:18px}.controls{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-top:12px}
+button{font:inherit;color:#eaf7ff;background:#0b2037;border:1px solid var(--line);border-radius:13px;padding:12px 14px;cursor:pointer}button.primary{background:linear-gradient(135deg,#0e82c8,#1551a2);border-color:#55eaff;box-shadow:0 0 22px rgba(35,141,255,.16)}button:active{transform:scale(.985)}button:disabled{opacity:.5}
+.panel{border:1px solid var(--line);background:rgba(8,19,34,.86);border-radius:17px;padding:14px}.panel h2{font-size:11px;letter-spacing:.16em;color:var(--cyan);font-weight:650;margin:0 0 11px}.chat{display:flex;flex-direction:column;gap:9px;max-height:300px;overflow:auto}.msg{font-size:14px;line-height:1.5;padding:10px 12px;border-radius:12px;max-width:94%;white-space:pre-wrap;overflow-wrap:anywhere}.msg.ai{align-self:flex-start;background:#0c2238;border:1px solid rgba(85,234,255,.14)}.msg.user{align-self:flex-end;background:#123a61;border:1px solid rgba(85,234,255,.24)}.entry{display:flex;gap:7px;margin-top:11px}.entry input{flex:1;min-width:0;background:#06101e;border:1px solid var(--line);border-radius:11px;padding:12px;color:white;font:inherit}.entry button{padding:12px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.tile{display:flex;flex-direction:column;gap:6px;text-align:left;min-height:78px}.tile strong{font-size:12px}.tile span{font-size:10px;color:var(--muted)}
+.settings{display:flex;flex-direction:column;gap:8px}.settings label{font-size:11px;color:var(--muted)}.settings input{width:100%;margin-top:5px;background:#06101e;border:1px solid var(--line);border-radius:10px;padding:11px;color:white}.note{font-size:11px;line-height:1.5;color:var(--muted)}footer{text-align:center;color:#6685a3;font-size:10px;line-height:1.5;padding:5px}
+@media(min-width:600px){.core-wrap{width:205px}.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style>
+</head>
+<body><main class="app">
+<header><div><div class="brand">J.A.R.V.I.S.</div><div class="sub">PERSONAL ASSISTANT INTERFACE</div></div><div class="status" id="status">● PRONTO</div></header>
+<section class="hero">
+<div class="clock" id="clock">--:--:--</div><div class="date" id="date"></div>
+<div class="core-wrap"><div class="ring"></div><div class="core" id="core"></div></div>
+<div class="hint" id="hint">À sua disposição, senhor.</div>
+<div class="controls"><button class="primary" id="talk">🎙 Conversar por voz</button><button id="mute">🔊 Voz ativada</button></div>
+</section>
+<section class="panel"><h2>CANAL DE COMUNICAÇÃO</h2><div class="chat" id="chat"><div class="msg ai">Bom dia, senhor. Interface inicializada. Posso responder comandos básicos neste protótipo. Para conversa aberta com IA, configure um endpoint seguro nas opções abaixo.</div></div>
+<form class="entry" id="form"><input id="input" autocomplete="off" placeholder="Digite um comando..." aria-label="Digite um comando"><button class="primary" type="submit">Enviar</button></form></section>
+<section class="panel"><h2>COMANDOS RÁPIDOS</h2><div class="grid">
+<button class="tile" data-command="Que horas são?"><strong>◷ Horário</strong><span>Consultar hora atual</span></button>
+<button class="tile" data-command="Me dê uma mensagem motivadora para hoje."><strong>✧ Motivação</strong><span>Foco para o dia</span></button>
+<button class="tile" data-command="Me ajude a organizar meu dia."><strong>▦ Planejar meu dia</strong><span>Prioridades e rotina</span></button>
+<button class="tile" data-command="Como crio um alarme às seis da manhã com a Siri?"><strong>⌁ Alarme 06:00</strong><span>Orientação para Siri</span></button>
+</div></section>
+<section class="panel"><h2>INTEGRAÇÃO DE IA (OPCIONAL)</h2><div class="settings">
+<label for="endpoint">URL do seu backend de IA (não coloque chaves secretas aqui)<input id="endpoint" type="url" placeholder="https://seu-backend.example/chat"></label>
+<button id="saveEndpoint">Salvar endpoint neste navegador</button>
+<div class="note">Sem endpoint, o app usa respostas locais de demonstração. Para conversar livremente, conecte um backend seu ou um serviço compatível. Nunca coloque uma chave privada de API diretamente neste arquivo ou no navegador.</div>
+</div></section>
+<footer>Protótipo PWA • Inspirado em assistentes de ficção científica.<br>Não controla diretamente alarmes, chamadas ou outros apps do iPhone.</footer>
+</main>
+<script>
+const $=s=>document.querySelector(s);let voiceOn=true,recognition=null,listening=false,endpoint=localStorage.getItem('jarvisEndpoint')||'';
+$('#endpoint').value=endpoint;
+function tick(){const d=new Date();$('#clock').textContent=d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});$('#date').textContent=d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});}tick();setInterval(tick,1000);
+function addMsg(text,who='ai'){const el=document.createElement('div');el.className='msg '+who;el.textContent=text;$('#chat').appendChild(el);$('#chat').scrollTop=$('#chat').scrollHeight;}
+function speak(text){if(!voiceOn||!('speechSynthesis'in window))return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='pt-BR';u.rate=.9;u.pitch=.78;const v=window.speechSynthesis.getVoices();u.voice=v.find(x=>x.lang==='pt-BR'&&/male|mascul|daniel|ricardo/i.test(x.name))||v.find(x=>x.lang==='pt-BR')||null;window.speechSynthesis.speak(u);}
+function localReply(text){const t=text.toLowerCase();if(/hora|horas/.test(t))return 'Senhor, agora são '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+'.';if(/motiv|ânimo|animo/.test(t))return 'Sugestão, senhor: escolha uma prioridade importante e comece por cinco minutos. A consistência vence a perfeição.';if(/planej|organizar|rotina|agenda/.test(t))return 'Vamos organizar o dia em três prioridades: uma tarefa essencial, uma tarefa rápida e um intervalo para cuidar de si. Diga-me seus compromissos para montar um plano.';if(/alarme|seis|06:00/.test(t))return 'Posso orientar, senhor, mas não consigo criar o alarme diretamente. Diga: “E aí, Siri, defina um alarme para as seis da manhã”.';if(/ajuda|comando|o que você faz|o que voce faz/.test(t))return 'Posso consultar a hora, falar respostas, ajudar a planejar e orientar comandos para Siri. Para responder livremente a qualquer pergunta, conecte um backend de IA.';return 'Recebido, senhor. Esta é uma resposta local de demonstração. Configure um backend de IA para ativar conversas abertas.';}
+async function respond(text){$('#hint').textContent='Processando solicitação, senhor...';let reply='';if(endpoint){try{const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text,system:'Você é um assistente pessoal inspirado no JARVIS: português brasileiro, formal, calmo, preciso, humor sutil; trate a pessoa por senhor. Não afirme ter executado ações que não executou.'})});if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();reply=data.reply||data.message||data.output||'O serviço respondeu, mas não retornou um campo reply/message/output.';}catch(e){reply='Não consegui acessar o serviço de IA. Verifique a URL e a configuração do backend. Detalhe: '+e.message;}}else reply=localReply(text);addMsg(reply,'ai');speak(reply);$('#hint').textContent='À sua disposição, senhor.';}
+function send(text){text=text.trim();if(!text)return;addMsg(text,'user');$('#input').value='';respond(text);}
+$('#form').addEventListener('submit',e=>{e.preventDefault();send($('#input').value)});document.querySelectorAll('[data-command]').forEach(b=>b.addEventListener('click',()=>send(b.dataset.command)));
+$('#mute').addEventListener('click',()=>{voiceOn=!voiceOn;$('#mute').textContent=voiceOn?'🔊 Voz ativada':'🔇 Voz desativada';if(!voiceOn&&'speechSynthesis'in window)window.speechSynthesis.cancel();});
+$('#saveEndpoint').addEventListener('click',()=>{endpoint=$('#endpoint').value.trim();localStorage.setItem('jarvisEndpoint',endpoint);addMsg(endpoint?'Endpoint salvo neste navegador. Teste uma mensagem; nenhuma chave secreta deve ser colocada aqui.':'Endpoint removido. O app usará respostas locais.','ai');});
+function stop(){if(recognition)recognition.stop();listening=false;$('#core').classList.remove('listening');$('#talk').textContent='🎙 Conversar por voz';$('#status').textContent='● PRONTO';}
+$('#talk').addEventListener('click',()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(listening){stop();return;}if(!SR){$('#hint').textContent='Reconhecimento de voz não disponível neste navegador. Use a digitação ou o ditado do teclado.';return;}recognition=new SR();recognition.lang='pt-BR';recognition.interimResults=false;recognition.maxAlternatives=1;recognition.onstart=()=>{listening=true;$('#core').classList.add('listening');$('#talk').textContent='■ Parar de ouvir';$('#status').textContent='● OUVINDO';$('#hint').textContent='Estou ouvindo, senhor...';};recognition.onresult=e=>{const t=e.results[0][0].transcript;stop();send(t);};recognition.onerror=e=>{$('#hint').textContent='Microfone indisponível ('+e.error+'). Verifique a permissão ou use o ditado.';stop();};recognition.onend=()=>{if(listening)stop();};try{recognition.start()}catch(e){$('#hint').textContent='Não foi possível iniciar o microfone. Tente novamente.';stop();}});
+if('serviceWorker'in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script></body></html>
